@@ -10,9 +10,8 @@ repositories {
 }
 
 dependencies {
-//    compileOnly("org.postgresql:postgresql:42.2.9")
-    implementation("com.example:project1:0.0.1")
     implementation("org.apache.logging.log4j:log4j-api:$LOG4J_VERSION")
+    implementation("com.google.code.gson:gson:2.13.1")
     compileOnly("javax.servlet:javax.servlet-api:4.0.1")
 }
 
