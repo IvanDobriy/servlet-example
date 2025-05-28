@@ -10,7 +10,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
@@ -23,9 +23,7 @@ public class MainServlet extends HttpServlet {
         logger.info("init servlet {}", this.getClass());
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        logger.info("METHOD: Get, uri: {}", req.getRequestURI());
+    private void logic(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         final var result = new Result();
 
         final var servletConfig = new HashMap<String, String>();
@@ -45,20 +43,23 @@ public class MainServlet extends HttpServlet {
         });
 
 
+        logger.info("content length: {}", req.getContentLength());
         final var bodyBuilder = new byte[req.getContentLength()];
         final var reader = req.getInputStream();
 
         int character;
         int counter = 0;
         while ((character = reader.read()) != -1) {
-            bodyBuilder[counter] = (byte)character;
+            bodyBuilder[counter] = (byte) character;
             counter++;
         }
         result.setMethod("GET");
         result.setUri(req.getRequestURI());
         result.setHeaders(headersMap);
         result.setParameters(req.getParameterMap());
-        result.setBody(new String(bodyBuilder));
+        if (counter > 0) {
+            result.setBody(new String(bodyBuilder));
+        }
         result.setServletConfig(servletConfig);
         result.setApplicationConfig(applicationConfig);
 
@@ -76,17 +77,26 @@ public class MainServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        logger.info("METHOD: GET, uri: {}", req.getRequestURI());
+        logic(req, resp);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         logger.info("METHOD: Post, parameter map: {}", req.getParameterMap());
+        logic(req, resp);
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         logger.info("METHOD: Put, parameter map: {}", req.getParameterMap());
+        logic(req, resp);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         logger.info("METHOD: Delete, parameter map: {}", req.getParameterMap());
+        logic(req, resp);
     }
 }
