@@ -53,7 +53,7 @@ public class MainServlet extends HttpServlet {
             bodyBuilder[counter] = (byte) character;
             counter++;
         }
-        result.setMethod("GET");
+        result.setMethod(req.getMethod());
         result.setUri(req.getRequestURI());
         result.setHeaders(headersMap);
         result.setParameters(req.getParameterMap());
